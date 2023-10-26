@@ -12,4 +12,4 @@ df = pd.DataFrame(a)
 
 print(df) 
 
-
+# n first prime number
