@@ -38,14 +38,14 @@ n = int(input('Number: '))
 a = []
 
 for i in range(0,n):
-    x = int(input(f'Element number {i}: '))
+    x = int(input(f'Element number {i+1}: '))
     a.append(x)
 
 def SimpleSearch(input_table, search_value):
     flag = 1
     for i in range(0,len(input_table)):
         if a[i] == search_value:
-            print(str(i), end = ' ')
+            print(str(i+1), end = ' ')
             flag = 0
     if flag == 1: print(-1)
 
