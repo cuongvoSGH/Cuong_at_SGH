@@ -4,7 +4,7 @@ findspark.init()
 import pyspark
 from pyspark.sql import SparkSession
 
-spark = SparkSession.builder.getOrCreate()
+sc = SparkSession.builder.getOrCreate()
 
 text = """
 The quick brown fox jumps over the lazy dog.
