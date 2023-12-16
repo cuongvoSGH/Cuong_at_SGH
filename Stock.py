@@ -7,7 +7,7 @@ import csv
 
 print(f'Download the data ....')
 # Create for the stock list
-stock_list = ['GOOG', 'IBM', 'MSFT', 'PFE', 'TSLA', 'F', 'AMD', 'UBER']
+stock_list = ['GOOG', 'IBM', 'MSFT', 'PFE', 'TSLA', 'F', 'AMD', 'UBER', 'VFS', 'NPNYY', 'AAIGF', 'XRX', 'COST']
 
 # Download csv file from yahoo finance for each stock code in stock list and restore it into folder stoct_list
 for stock in stock_list:
