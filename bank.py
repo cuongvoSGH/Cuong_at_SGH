@@ -1,121 +1,126 @@
+# CUONG VO - 131116
+
 class Customer:
     last_id = 0
-
-    def __init__(self, firstname, lastname):
+    def __init__(self, cid, firstname, surname):
+        self.cid = cid
         self.firstname = firstname
-        self.lastname = lastname
+        self.surname = surname
         Customer.last_id += 1
         self.id = Customer.last_id
 
     def __repr__(self):
-        return f'Customer[{self.id}, {self.firstname}, {self.lastname}]'
-
+        return f'Customer created [{self.id}, {self.cid}, {self.firstname}, {self.surname}]'
 
 class Account:
     last_id = 1000
-
-    def __init__(self, customer):
+    def __init__(self, cid, customer):
+        self.cid = cid
         self.customer = customer
         Account.last_id += 1
         self.id = Account.last_id
         self._balance = 0
-
-    def deposit(self, amount):
-        #TODO implement
-        if type(amount) != int or amount < 0:
-            raise InvalidAmountException(f'Amount is invalid {amount}')
-        self._balance += amount
-
-    def charge(self, amount):
-        #TODO implement
-        if type(amount) != int or amount < 0:
-            raise InvalidAmountException(f'Amount is invalid {amount}')
-
-        pass
-
+        
     def __repr__(self):
-        return f'Account[{self.id}, {self.customer.lastname}, {self._balance}]'
-
-
+        return f'Account created [{self.id}, {self.cid}, {self.customer}, {self._balance}]'
+    
 class Bank:
     def __init__(self):
-        self.customer_list = []
-        self.account_list = []
-
-    def create_customer(self, firstname, lastname):
-        c = Customer(firstname, lastname)
-        self.customer_list.append(c)
+        self.customer_list = dict()
+        self.account_list = dict()
+    
+    def create_customer(self, cid, firstname, surname):
+        if cid in self.customer_list:
+            raise ExistingCustomerException(f'Existing Customer with ID {cid}')
+        c = Customer(cid, firstname, surname)
+        self.customer_list[c.cid] = [c.id, c.cid, c.firstname, c.surname]
         return c
 
-    def create_account(self, customer):
-        a = Account(customer)
-        self.account_list.append(a)
+    def create_account(self, cid, customer):
+        if cid not in self.customer_list:
+            raise NonExistingCustomerException(f'Can not find the Customer {cid}')
+        a = Account(cid, customer)
+        self.account_list[a.id] = [a.id, a.cid, a.customer, a._balance]
         return a
 
-    def transfer(self, from_account_id, to_account_id, amount):
-        #TODO
-        pass
+    def find_account(self, id):
+        if id not in self.account_list:
+            raise NonExistingAccountException(f'Can not find Account with ID {id}')
+        return f'Found Account {self.account_list[id]}'
 
-    def find_account(self, account_id):
-        #TODO
-        pass
+    def transfer(self, from_account_id, to_account_id, amount):
+        if (type(amount) != int) or (amount < 0):
+            raise InvalidAmountException(f'Invalid amount {amount}')
+        if from_account_id not in self.account_list:
+            raise NonExistingAccountException(f'Transfer Account is not valid {from_account_id}')
+        if to_account_id not in self.account_list:
+            raise NonExistingAccountException(f'Receive Account is not valid {to_account_id}')
+        tmp_balance = self.account_list[from_account_id][3]
+        if amount > tmp_balance -5:
+            raise InsufficientFundsException(f'Not enough funds {tmp_balance}')
+        self.account_list[from_account_id][3] -= amount
+        self.account_list[to_account_id][3] += amount
+        return f'Successfully transfered from {from_account_id} to {to_account_id} amount {amount}'
+    
+    def deposit(self, id, amount):
+        if (type(amount) != int) or (amount < 0):
+            raise InvalidAmountException(f'Invalid amount {amount}')
+        if id not in self.account_list:
+            raise NonExistingAccountException(f'Can not find the Account {id}')
+        self.account_list[id][3] += amount
+        return f'Deposit done amount {amount} --> Account balance {self.account_list[id]}'
+        
+    def charge(self, id, amount):
+        if (type(amount) != int) or (amount < 0):
+            raise InvalidAmountException(f'Invalid amount {amount}')
+        if id not in self.account_list:
+            raise NonExistingAccountException(f'Can not find the Account {id}')
+        tmp_balance = self.account_list[id][3]
+        if amount > tmp_balance - 5:
+            raise InsufficientFundsException(f'Not enough funds {tmp_balance}')
+        self.account_list[id][3] -= amount
+        return f'Charge done amount {amount} --> Account balance {self.account_list[id]}'
+            
+    def __repr__(self):
+        return f'Bank contain Customer: {len(self.customer_list)} and Account: {len(self.account_list)}'
+    
+class AccountTransactions:
+    def __init__(self):
+        self.transations_list = dict()
+    
+    def put_transaction(self, id, transaction):
+        self.id = id
+        if id not in self.transations_list:
+            self.transations_list[id] = transaction
+        else: self.transations_list[id] += transaction
+        return f'{transaction} put successfully to transaction list'
+    
+    def get_transaction(self, id):
+        self.id = id
+        if id not in self.transations_list:
+            raise EmptyTransactionException(f'Do not have any transaction for account {id}')
+        return self.transations_list[id]
 
     def __repr__(self):
-        return f'Bank[{self.customer_list}; {self.account_list}]'
-
-
+        return f'{len(self.transations_list)} accounts have transaction.'
+    
 class BankException(Exception):
     pass
 
-
-class InsufficientFundsException(BankException):
+class ExistingCustomerException(BankException):
     pass
-
 
 class InvalidAmountException(BankException):
     pass
 
-bank = Bank()
+class InsufficientFundsException(BankException):
+    pass
 
-c = bank.create_customer('John', 'Brown')
-print(c)
-a = bank.create_account(c)
-a2 = bank.create_account(c)
-print(a)
+class NonExistingCustomerException(BankException):
+    pass
 
-c2 = bank.create_customer('Anne', 'Smith')
-a3 = bank.create_account(c2)
-print(bank)
-print('--------')
-try:
-    #a = None
-    #raise ValueError('aafafa')
-    #a.deposit(330)
-    a3.deposit(100)
-    #a3.deposit(-50)
-except BankException as ie:
-    print(f'Something went wrong {ie}')
-#except (InvalidAmountException, InsufficientFundsException) as ie:
-#    print(f'Something went wrong {ie}')
-except Exception as e:
-    print(f'Exception was thrown: {e}')
-else:
-    print('Run it when no exception occured')
-finally:
-    print('This was run at the end')
+class NonExistingAccountException(BankException):
+    pass    
 
-
-# if a3.deposit(100):
-#     print('deposit succeeded')
-# else:
-#     print('deposit failed')
-# print(bank)
-# if a3.deposit(-50):
-#     print('deposit succeeded')
-# else:
-#     print('deposit failed')
-print('before transfer')
-print(bank)
-bank.transfer(1003, 1002, 140)
-print('after transfer')
-print(bank)
+class EmptyTransactionException(BankException):
+    pass
