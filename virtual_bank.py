@@ -119,7 +119,7 @@ while checking ==True:
                             cnt = input()
                             if cnt == 'N': checking = False
                 except bank.BankException as ie:
-                    print(f'Something went wrong {ie}')
+                    print(f'{ie}')
                     print('Continue [Y/N]: ', end = '')
                     cnt = input()
                     if cnt == 'N': checking = False   
@@ -151,7 +151,7 @@ while checking ==True:
                 tmp = input()
                 if tmp == 'Y': checking = False
     except bank.BankException as ie:
-        print(f'Something went wrong {ie}')
+        print(f'{ie}')
         print('Continue [Y/N]: ', end = '')
         cnt = input()
         if cnt == 'N': checking = False
