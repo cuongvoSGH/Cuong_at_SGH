@@ -3,6 +3,7 @@ venv
 .idea/
 *.png
 stock_list/
+stock_list_TSA/
 price_analyze/
 *.txt
 *.json
